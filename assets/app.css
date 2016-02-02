@@ -1,0 +1,27 @@
+
+.grid {
+  position: relative;
+  margin: 0 auto;
+
+  border: solid 3px black;
+  background: #A55353;
+}
+
+.ball {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  border-radius: 50%;
+  background-color: #FFE1E1;
+  transition: top 2s linear, left 2s linear;
+}
+
+.slider {
+  width: 100px;
+  height: 15px;
+
+  box-sizing: border-box;
+  border: solid 1px black;
+  background-color: #C1F861;
+}
