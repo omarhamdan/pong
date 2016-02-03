@@ -9,9 +9,6 @@
 
 .ball {
   position: absolute;
-  top: 0;
-  left: 0;
-
   border-radius: 50%;
   background-color: #FFE1E1;
 }
