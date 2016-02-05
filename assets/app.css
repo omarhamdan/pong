@@ -21,3 +21,10 @@
   border: solid 1px black;
   background-color: #C1F861;
 }
+
+
+.stop-button {
+  display: block;
+  width: 70px;
+  margin: 20px auto;
+}

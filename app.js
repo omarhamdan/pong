@@ -2,76 +2,41 @@
   "use strict";
 
   let unit = 1;
+  let pongWidth = 600;
+  let pongHeight = 450;
 
   let Pong = function(options) {
     this.$elem = $(options.elem);
     this.unit = unit;
-    this.unitWidth = 600;
-    this.unitHeight = 450;
+    this.unitWidth = pongWidth;
+    this.unitHeight = pongHeight;
+    this.stop = false;
     this.run();
   }
 
   Pong.prototype.run = function() {
-   this.$elem.width(this.unitWidth * this.unit).height(this.unitHeight * this.unit);
-    let ball = this.ball = new Ball({
+    this.$elem.width(this.unitWidth * this.unit).height(this.unitHeight * this.unit);
+    this.ball = new Ball({
       elem: ".ball"
     });
-
+    this.ball.pong = this;
     this.start();
   }
 
-  Pong.prototype.checkObstacles = function() {
-
-    let rightMost = this.ball.x + this.ball.unitWidth;
-    let topMost = this.ball.y + this.ball.unitHeight;
-
-    let topRightCorner = (rightMost === this.unitWidth) &&
-                         (topMost === this.unitHeight) &&
-                         this.ball.xDirection === 1 &&
-                         this.ball.yDirection === 1;
-
-    let topLeftCorner = (this.ball.x === 0) &&
-                        (topMost === this.unitHeight) &&
-                        this.ball.xDirection === -1 &&
-                        this.ball.yDirection === 1;
-
-    let bottomRightCorner = (rightMost === this.unitWidth) &&
-                            (this.ball.y === 0) &&
-                            this.ball.xDirection === 1 &&
-                            this.ball.yDirection === -1;
-
-    let bottomleftCorner = (this.ball.x === 0)  &&
-                           (this.ball.y === 0) &&
-                           this.ball.xDirection === -1 &&
-                           this.ball.yDirection === -1;
-
-    /* if corner */
-    if (topRightCorner || topLeftCorner || bottomRightCorner || bottomleftCorner) {
-      this.ball.xDirection = -this.ball.xDirection;
-      this.ball.yDirection = -this.ball.yDirection;
-    } else {
-      /* if border */
-      if ((rightMost >= this.unitWidth) || this.ball.x < 1) {
-        /* symmetry wrt x-axis */
-        this.ball.xDirection = -this.ball.xDirection;
-      } else if ((topMost >= this.unitHeight) || this.ball.y < 1) {
-        /* symmetry wrt y-axis */
-        this.ball.yDirection = -this.ball.yDirection;
-      }
-    }
-
-    setTimeout(this.move.bind(this), 0);
-  }
-
   Pong.prototype.start = function() {
-    let stop = true;
+    let _this = this;
     $('.stop-button').click(function() {
-      stop = false;
+      if ($(this).text() === "Stop!") {
+         $(this).text('Resume');
+        _this.stop = true;
+      } else {
+        $(this).text('Stop!');
+        _this.stop = false;
+        _this.ball.move();
+      }
     });
-    while (!stop) {
-      this.ball.move();
-      this.ball.checkObstacles();
-    }
+
+    this.ball.move();
   }
 
   let Ball = function(options) {
@@ -85,8 +50,8 @@
     this.y = 0;
 
     /* Represent Direction */
-    this.xDirection = -1;
-    this.yDirection = -1;
+    this.xDirection = 1;
+    this.yDirection = 1;
 
     /* Represent Magnitude */
     this.xMagnitude = 1;
@@ -103,7 +68,40 @@
       bottom : (this.y) + 'px',
       left: (this.x) + 'px'
     });
+
+    setTimeout(this.checkObstacles.bind(this), 0);
   }
+
+  Ball.prototype.checkObstacles = function() {
+    let rightMost = this.x + this.unitWidth;
+    let topMost = this.y + this.unitHeight;
+
+    let topRightCorner = (rightMost === pongWidth) && (topMost === pongHeight) && this.xDirection === 1 && this.yDirection === 1;
+    let topLeftCorner = (this.x === 0) && (topMost === pongHeight) && this.xDirection === -1 && this.yDirection === 1;
+    let bottomRightCorner = (rightMost === pongWidth) && (this.y === 0) && this.xDirection === 1 && this.yDirection === -1;
+    let bottomleftCorner = (this.x === 0)  && (this.y === 0) && this.xDirection === -1 && this.yDirection === -1;
+
+    /* if corner */
+    if (topRightCorner || topLeftCorner || bottomRightCorner || bottomleftCorner) {
+      this.xDirection = -this.xDirection;
+      this.yDirection = -this.yDirection;
+    } else {
+      /* if border */
+      if ((rightMost >= pongWidth) || this.x < 1) {
+        /* symmetry wrt x-axis */
+        this.xDirection = -this.xDirection;
+      } else if ((topMost >= pongHeight) || this.y < 1) {
+        /* symmetry wrt y-axis */
+        this.yDirection = -this.yDirection;
+      }
+    }
+
+    if (!this.pong.stop) {
+      this.move();
+    }
+  }
+
+
 
   $(function() {
     new Pong({
