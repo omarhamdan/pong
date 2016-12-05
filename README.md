@@ -6,4 +6,4 @@ You have control over a rectangular shaped block which can only move left and ri
 In the future... 
 
 ## Disclaimer
-This game is not built for your entertainment, it is for me to learn to code.  
+Terrible code at best
